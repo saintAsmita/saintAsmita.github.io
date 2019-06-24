@@ -1327,7 +1327,7 @@ pre .javascript .function {
   opacity: 0;
 }
 .posts-expand {
-  padding-top: 40px;
+  padding-top: 0px;
 }
 @media (max-width: 767px) {
   .posts-expand {
@@ -1826,7 +1826,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #ff75f5;
+  background: #9af5ff;
 }
 .feed-link,
 .chat {
