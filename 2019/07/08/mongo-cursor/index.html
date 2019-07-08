@@ -96,21 +96,18 @@
 
 
 
-  <meta name="description" content="本文主要是介绍在实际开发过程中，对于Git的一些操作，用来给大家分享的同时，也用以记录。对于稍微复杂点的操作，我会配上图文例子">
-<meta name="keywords" content="Git">
+  <meta name="description" content="本文主要介绍Mongodb中，如何使用游标。有时候我们想着对满足条件的全部数据进行操作，如果量很大，那么肯定不能直接全部查出来，这时候使用游标进行扫描就好了。">
+<meta name="keywords" content="mongo Springboot">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Git的操作展示">
-<meta property="og:url" content="http://yoursite.com/2019/05/31/GitOperation/index.html">
+<meta property="og:title" content="springboot use mongo-cursor">
+<meta property="og:url" content="http://yoursite.com/2019/07/08/mongo-cursor/index.html">
 <meta property="og:site_name" content="Code">
-<meta property="og:description" content="本文主要是介绍在实际开发过程中，对于Git的一些操作，用来给大家分享的同时，也用以记录。对于稍微复杂点的操作，我会配上图文例子">
+<meta property="og:description" content="本文主要介绍Mongodb中，如何使用游标。有时候我们想着对满足条件的全部数据进行操作，如果量很大，那么肯定不能直接全部查出来，这时候使用游标进行扫描就好了。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1559368641/codexiongan/1_qc18gf.png">
-<meta property="og:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1559369356/codexiongan/2_giv9h1.png">
-<meta property="og:updated_time" content="2019-06-24T14:11:16.692Z">
+<meta property="og:updated_time" content="2019-07-08T13:23:32.146Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Git的操作展示">
-<meta name="twitter:description" content="本文主要是介绍在实际开发过程中，对于Git的一些操作，用来给大家分享的同时，也用以记录。对于稍微复杂点的操作，我会配上图文例子">
-<meta name="twitter:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1559368641/codexiongan/1_qc18gf.png">
+<meta name="twitter:title" content="springboot use mongo-cursor">
+<meta name="twitter:description" content="本文主要介绍Mongodb中，如何使用游标。有时候我们想着对满足条件的全部数据进行操作，如果量很大，那么肯定不能直接全部查出来，这时候使用游标进行扫描就好了。">
 
 
 
@@ -118,7 +115,7 @@
 
   
   
-  <link rel="canonical" href="http://yoursite.com/2019/05/31/GitOperation/">
+  <link rel="canonical" href="http://yoursite.com/2019/07/08/mongo-cursor/">
 
 
 
@@ -128,7 +125,7 @@
   };
 </script>
 
-  <title>Git的操作展示 | Code</title>
+  <title>springboot use mongo-cursor | Code</title>
   
 
 
@@ -321,7 +318,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/31/GitOperation/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/08/mongo-cursor/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="saint Asmita">
@@ -338,7 +335,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Git的操作展示
+          <h1 class="post-title" itemprop="name headline">springboot use mongo-cursor
 
               
             
@@ -364,24 +361,12 @@
                 
               
 
-              <time title="创建时间：2019-05-31 18:06:37" itemprop="dateCreated datePublished" datetime="2019-05-31T18:06:37+08:00">2019-05-31</time>
+              <time title="创建时间：2019-07-08 21:11:17 / 修改时间：21:23:32" itemprop="dateCreated datePublished" datetime="2019-07-08T21:11:17+08:00">2019-07-08</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-24 22:11:16" itemprop="dateModified" datetime="2019-06-24T22:11:16+08:00">2019-06-24</time>
               
             
           </span>
@@ -415,26 +400,10 @@
       
 
       
-        <p>本文主要是介绍在实际开发过程中，对于Git的一些操作，用来给大家分享的同时，也用以记录。对于稍微复杂点的操作，我会配上图文例子<br><a id="more"></a></p>
-<h2 id="Git-结构"><a href="#Git-结构" class="headerlink" title="Git 结构"></a>Git 结构</h2><p>如果你有时间，可以直接看这篇别人家的高端文章，清晰易懂<a href="https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E9%87%8D%E7%BD%AE%E6%8F%AD%E5%AF%86#r_git_reset" target="_blank" rel="noopener">比较清晰的讲git结构和版本回退的</a><br>强烈推荐看一看，尤其是结合那些图：head，索引和工作区。</p>
-<h2 id="版本回退之-reset"><a href="#版本回退之-reset" class="headerlink" title="版本回退之 reset"></a>版本回退之 reset</h2><h3 id="soft-默认参数与hard"><a href="#soft-默认参数与hard" class="headerlink" title="soft,默认参数与hard"></a>soft,默认参数与hard</h3><ol>
-<li><strong>soft</strong><br>试想一个场景，你add了好多东西，而且commit了，但是push之前后悔了，不应该在master上提交，还是想撤销了这些commit，然后暂存一下，再搞其他的。那么怎么撤销提交呢。<br>就可以用soft参数了。soft仅仅是将HEAD回到你指定的地方，仅此而已，索引（暂存区）和工作区（你编辑文件的地方）都不变。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --soft 目的版本号</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>执行此命令仅仅是撤销了commit，并没有撤销add，因为索引没变化。所以这时候你执行<code>git status</code>，看到的是add之后的状态，待提交。</p>
-<ol start="2">
-<li><strong>默认参数</strong><br>add并且提交了<code>commit1</code>与<code>commit2</code>的修改，此时二者被放到了本地仓库，且本地的head已经指向了这个提交。那么这时候只想提交一个，而不是提交两个，怎么办呢？<br>如下图：<br><img src="https://res.cloudinary.com/saintasmita/image/upload/v1559368641/codexiongan/1_qc18gf.png" alt><br>做法：<br><code>git log</code>找到你要回退的目的地，然后执行<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset 你的目的地的版本号</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>这个命令就完成了两步：<br>1、将本地仓库HEAD指针回退一下；<br>2、索引（暂存区）的指向也回退一下，工作区的东西不动。<br>如此，就回到了仅仅修改没有add，没有提交的状态了。</p>
-<p><code>git status</code>查看如下图了，发现两个文件又回到了未add和commit的状态：<br><img src="https://res.cloudinary.com/saintasmita/image/upload/v1559369356/codexiongan/2_giv9h1.png" alt></p>
-<ol start="3">
-<li><strong>hard</strong><br>如果你已经提交了，但是又想完全抛弃这些提交，撤销add，连工作区的那些更改也都撤销，这时候你需要<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard 目的地版本号</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>如果你不小心执行了这个，发现没必要回退，又想找回来已经提交的，那没问题。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard 想找回的提交ID</span><br></pre></td></tr></table></figure></p>
-<p>即可，毕竟这些命令指示移动各种指针，又没有删除节点。<br>当然了，<code>--hard</code><strong>会覆盖掉你没提交的那些文件的，而且再也找不回来的。</strong></p>
-
+        <p>本文主要介绍Mongodb中，如何使用游标。<br>有时候我们想着对满足条件的全部数据进行操作，如果量很大，那么肯定不能直接全部查出来，这时候使用游标进行扫描就好了。<br><a id="more"></a></p>
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><p>假定我们有如下的一个entity，用来存储某些用户访问的最后日期，他只有用户、年、月、日四项。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@Document</span>(collection = COL_NAME)</span><br><span class="line"><span class="meta">@CompoundIndex</span>(name = <span class="string">"idx_month_day"</span>, def = <span class="string">"&#123;'month':1, 'day':1&#125;"</span>, background = <span class="keyword">true</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AccessDay</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String COL_NAME = <span class="string">"access_day"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String FIELD_USER_ID = <span class="string">"_id"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String FIELD_YEAR = <span class="string">"year"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String FIELD_MONTH = <span class="string">"month"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String FIELD_DAY = <span class="string">"day"</span>;</span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="keyword">private</span> Long userId;</span><br><span class="line">    <span class="meta">@Field</span>(FIELD_YEAR)</span><br><span class="line">    <span class="keyword">private</span> Integer year;</span><br><span class="line">    <span class="meta">@Field</span>(FIELD_MONTH)</span><br><span class="line">    <span class="keyword">private</span> Integer month;</span><br><span class="line">    <span class="meta">@Field</span>(FIELD_DAY)</span><br><span class="line">    <span class="keyword">private</span> Integer day;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果我想对这个月所有的用户进行处理，那么显然，不能直接查出来，这样的话量太大了，因此可以通过游标进行处理，具体逻辑处理就是通过Consumer就可以了。<br>每200个记录，访问一次db。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">scanUsers</span><span class="params">(Integer month, Integer day, Consumer &lt; Long &gt; consumer, <span class="keyword">long</span> maxExecTimestamp)</span> </span>&#123;</span><br><span class="line">    Criteria criteria = Criteria.where(FIELD_MONTH).is(month).and(FIELD_DAY).is(day);</span><br><span class="line">    Query query = Query.query(criteria);</span><br><span class="line">    query.fields().include(FIELD_UID);</span><br><span class="line"></span><br><span class="line">    mongoTemplate.execute(AccessDay.class, collection - &gt; &#123;</span><br><span class="line">        FindIterable &lt; Document &gt; cursorIterator = collection.find(query.getQueryObject()).projection(query.getFieldsObject()).batchSize(<span class="number">200</span>);</span><br><span class="line">        <span class="keyword">try</span> (MongoCursor &lt; Document &gt; cursor = cursorIterator.iterator()) &#123;</span><br><span class="line">            <span class="keyword">while</span> (cursor.hasNext()) &#123;</span><br><span class="line">                Document document = cursor.next();</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    consumer.accept((Long) document.get(FIELD_USER_ID));</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    log.error(<span class="string">"scanUsers exception. month = &#123;&#125;"</span>, month, e);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (System.currentTimeMillis() &gt; maxExecTimestamp) &#123;</span><br><span class="line">                log.info(<span class="string">"scanUsers, stop cause overflow maxExecTimestamp. month = &#123;&#125;"</span>, month, maxExecTimestamp);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -457,7 +426,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Git/" rel="tag"># Git</a>
+            <a href="/tags/mongo-Springboot/" rel="tag"># mongo Springboot</a>
           
         </div>
       
@@ -470,8 +439,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/05/23/Using-Rabbit-in-Spring-boot/" rel="next" title="Using Rabbit in Spring boot">
-                <i class="fa fa-chevron-left"></i> Using Rabbit in Spring boot
+              <a href="/2019/06/27/unicode-substring/" rel="next" title="unicode-substring">
+                <i class="fa fa-chevron-left"></i> unicode-substring
               </a>
             
           </div>
@@ -479,10 +448,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/06/03/Spring Boot过滤多个Profle/" rel="prev" title="Spring Boot过滤多个Profile">
-                Spring Boot过滤多个Profile <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -625,7 +590,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Git-结构"><span class="nav-number">1.</span> <span class="nav-text">Git 结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#版本回退之-reset"><span class="nav-number">2.</span> <span class="nav-text">版本回退之 reset</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#soft-默认参数与hard"><span class="nav-number">2.1.</span> <span class="nav-text">soft,默认参数与hard</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#实例"><span class="nav-number">1.</span> <span class="nav-text">实例</span></a></li></ol></div>
             
 
           </div>
