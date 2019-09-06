@@ -96,20 +96,29 @@
 
 
 
-  <meta name="description" content="本文将简单介绍Redis性能测试工具redis-benchmark.exe，并且对key的长度对读写性能的影响做简单的测试。">
-<meta name="keywords" content="redis">
+  <meta name="description" content="目的地：雄县县城。去雄县的主要交通方式有：火车、飞机、长途车，只要到周边，会有车接的，欢迎大家的到来。">
+<meta name="keywords" content="交通">
 <meta property="og:type" content="article">
-<meta property="og:title" content="redis-benchmark">
-<meta property="og:url" content="http://yoursite.com/2019/06/24/redis-benchmark/index.html">
+<meta property="og:title" content="如何到达雄县县城">
+<meta property="og:url" content="http://yoursite.com/2019/08/16/如何到达雄县县城/index.html">
 <meta property="og:site_name" content="Code">
-<meta property="og:description" content="本文将简单介绍Redis性能测试工具redis-benchmark.exe，并且对key的长度对读写性能的影响做简单的测试。">
+<meta property="og:description" content="目的地：雄县县城。去雄县的主要交通方式有：火车、飞机、长途车，只要到周边，会有车接的，欢迎大家的到来。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1561381813/codexiongan/10_000keys_1000reqs.png">
-<meta property="og:updated_time" content="2019-07-08T13:28:20.097Z">
+<meta property="og:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1565947610/codexiongan/%E9%9B%84%E5%8E%BF%E7%81%AB%E8%BD%A6%E7%AB%99_qxbzzz.png">
+<meta property="og:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1565947629/codexiongan/%E9%9B%84%E5%8E%BF%E5%91%A8%E8%BE%B9%E6%9C%BA%E5%9C%BA_x9wl76.png">
+<meta property="og:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1565947662/codexiongan/%E9%9B%84%E5%8E%BF%E5%91%A8%E8%BE%B9%E6%9C%BA%E5%9C%BA002_bg3axp.png">
+<meta property="og:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1565944736/codexiongan/%E5%8C%97%E4%BA%AC%E5%88%B0%E7%99%BD%E6%B2%9F%E7%81%AB%E8%BD%A6_izajvi.png">
+<meta property="og:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1565944829/codexiongan/%E5%8C%97%E4%BA%AC%E5%88%B0%E7%99%BD%E6%B4%8B%E6%B7%80_marhug.png">
+<meta property="og:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1565945114/codexiongan/%E5%A4%A9%E6%B4%A5%E5%88%B0%E7%99%BD%E6%B2%9F_aejviy.png">
+<meta property="og:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1565945134/codexiongan/%E5%A4%A9%E6%B4%A5%E5%88%B0%E7%99%BD%E6%B4%8B%E6%B7%80_mt2enk.png">
+<meta property="og:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1565945659/codexiongan/%E5%B9%BF%E5%B7%9E%E5%88%B0%E7%99%BD%E6%B2%9F_clhks0.png">
+<meta property="og:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1565945679/codexiongan/%E5%B9%BF%E5%B7%9E%E7%99%BD%E6%B4%8B%E6%B7%80_zljhxo.png">
+<meta property="og:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1565945712/codexiongan/%E5%B9%BF%E5%B7%9E%E5%88%B0%E4%BF%9D%E5%AE%9A%E4%B8%9C_ggfeq8.png">
+<meta property="og:updated_time" content="2019-09-06T11:47:43.554Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="redis-benchmark">
-<meta name="twitter:description" content="本文将简单介绍Redis性能测试工具redis-benchmark.exe，并且对key的长度对读写性能的影响做简单的测试。">
-<meta name="twitter:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1561381813/codexiongan/10_000keys_1000reqs.png">
+<meta name="twitter:title" content="如何到达雄县县城">
+<meta name="twitter:description" content="目的地：雄县县城。去雄县的主要交通方式有：火车、飞机、长途车，只要到周边，会有车接的，欢迎大家的到来。">
+<meta name="twitter:image" content="https://res.cloudinary.com/saintasmita/image/upload/v1565947610/codexiongan/%E9%9B%84%E5%8E%BF%E7%81%AB%E8%BD%A6%E7%AB%99_qxbzzz.png">
 
 
 
@@ -117,7 +126,7 @@
 
   
   
-  <link rel="canonical" href="http://yoursite.com/2019/06/24/redis-benchmark/">
+  <link rel="canonical" href="http://yoursite.com/2019/08/16/如何到达雄县县城/">
 
 
 
@@ -127,7 +136,7 @@
   };
 </script>
 
-  <title>redis-benchmark | Code</title>
+  <title>如何到达雄县县城 | Code</title>
   
 
 
@@ -320,7 +329,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/24/redis-benchmark/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/16/如何到达雄县县城/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="saint Asmita">
@@ -337,7 +346,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">redis-benchmark
+          <h1 class="post-title" itemprop="name headline">如何到达雄县县城
 
               
             
@@ -363,7 +372,7 @@
                 
               
 
-              <time title="创建时间：2019-06-24 20:24:23" itemprop="dateCreated datePublished" datetime="2019-06-24T20:24:23+08:00">2019-06-24</time>
+              <time title="创建时间：2019-08-16 16:28:04" itemprop="dateCreated datePublished" datetime="2019-08-16T16:28:04+08:00">2019-08-16</time>
             
 
             
@@ -380,7 +389,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-08 21:28:20" itemprop="dateModified" datetime="2019-07-08T21:28:20+08:00">2019-07-08</time>
+                <time title="修改时间：2019-09-06 19:47:43" itemprop="dateModified" datetime="2019-09-06T19:47:43+08:00">2019-09-06</time>
               
             
           </span>
@@ -414,28 +423,34 @@
       
 
       
-        <p>本文将简单介绍<code>Redis</code>性能测试工具<code>redis-benchmark.exe</code>，并且对key的长度对读写性能的影响做简单的测试。<br><a id="more"></a></p>
-<h2 id="工具介绍"><a href="#工具介绍" class="headerlink" title="工具介绍"></a>工具介绍</h2><p>最近开发遇到一个加锁问题，提取到的key可能比较长，于是好奇了下key的长度对读写性能的影响，进而发现了Redis自带的性能测试工具<code>redis-benchmark.exe</code>。<br>此工具在你的<code>Redis安装目录</code>下。</p>
-<p>1、如下命令，将会执行默认的操作，100_000次。具体是啥操作，要看默认的是什么了。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-benchmark -q -n 100000</span><br></pre></td></tr></table></figure></p>
-<p>2、如果你只想执行部分命令的测试，那么如下，对<code>set</code>命令，随机生成10_000个key，执行1000次。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-benchmark -t set -r 10000 -n 1000</span><br></pre></td></tr></table></figure></p>
-<p>结果：<br><img src="https://res.cloudinary.com/saintasmita/image/upload/v1561381813/codexiongan/10_000keys_1000reqs.png" alt></p>
-<p>如果想指定多个命令同时测试，则<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-benchmark -t set,lpush -n 100000 -q</span><br></pre></td></tr></table></figure></p>
-<h2 id="关于key长度的测试"><a href="#关于key长度的测试" class="headerlink" title="关于key长度的测试"></a>关于key长度的测试</h2><h3 id="网上的一种答案"><a href="#网上的一种答案" class="headerlink" title="网上的一种答案"></a>网上的一种答案</h3><p>他说需要修改下redis-benchmark的源码，从而指定key测试，我没有实际操作过，就粘贴下他的测试结果。<a href="https://stackoverflow.com/questions/6320739/does-name-length-impact-performance-in-redis" target="_blank" rel="noopener">Stackoverflow上的好回答</a></p>
-<p>这位作者测试了3个不同长度的key的get。可以发现，这些key的长度，对读性能没什么影响。尤其是前两种，算不得长key。至于第三种key，需要在意的是存储空间。</p>
-<p>key = foo，GET，3次<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">59880.24 requests per second</span><br><span class="line">58139.53 requests per second</span><br><span class="line">58479.53 requests per second</span><br></pre></td></tr></table></figure></p>
-<p>key = set-allBooksBelongToUser:1234567890，GET，3次<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">60240.96 requests per second</span><br><span class="line">60606.06 requests per second</span><br><span class="line">58479.53 requests per second</span><br></pre></td></tr></table></figure></p>
-<p>key = ipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumloreipsumlorem:1234567890，GET，3次<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">58479.53 requests per second</span><br><span class="line">58139.53 requests per second</span><br><span class="line">56179.77 requests per second</span><br></pre></td></tr></table></figure></p>
-<h3 id="测试Lua脚本"><a href="#测试Lua脚本" class="headerlink" title="测试Lua脚本"></a>测试Lua脚本</h3><p>当然，我可以通过执行lua脚本，变相的测试指定key的性能。本机测试，不涉及到网络传输。<br>测试机器：一个普通的Windows机器。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-benchmark -n 100000 -q script load "redis.call('set','foo','bar')"</span><br></pre></td></tr></table></figure>
-<p>SET<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">5341.88 requests per second</span><br><span class="line">4795.70 requests per second</span><br><span class="line">5115.61 requests per second</span><br></pre></td></tr></table></figure></p>
-<p>GET<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">5057.40 requests per second</span><br><span class="line">4648.78 requests per second</span><br><span class="line">4727.01 requests per second</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-benchmark -n 100000 -q script load "redis.call('set','foo123456789_123456789_123456789_123456789_123456789_123456789','bar')"</span><br></pre></td></tr></table></figure>
-<p>SET<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">5078.20 requests per second</span><br><span class="line">4546.69 requests per second</span><br><span class="line">5270.09 requests per second</span><br></pre></td></tr></table></figure></p>
-<p>GET<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">4862.87 requests per second</span><br><span class="line">5005.00 requests per second</span><br><span class="line">4804.23 requests per second</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-benchmark -n 100000 -q script load "redis.call('set','foo123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789','bar')"</span><br></pre></td></tr></table></figure>
-<p>SET<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">5104.12 requests per second</span><br><span class="line">5075.63 requests per second</span><br><span class="line">5091.91 requests per second</span><br></pre></td></tr></table></figure></p>
-<p>GET<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">4974.38 requests per second</span><br><span class="line">5013.54 requests per second</span><br><span class="line">4715.65 requests per second</span><br></pre></td></tr></table></figure></p>
-<p>我们可以看到，key的长度对set,get也没有什么影响。当然，如果key的长度实在太长了，就会有影响，一般也碰不到那么长的key。几百个字符的key还是对性能没有影响的。<br>当然，不建议用这么长的key，影响阅读。</p>
+        <p>目的地：雄县县城。<br>去雄县的主要交通方式有：火车、飞机、长途车，只要到周边，会有车接的，欢迎大家的到来。</p>
+<a id="more"></a>
+<h2 id="交通方式概括"><a href="#交通方式概括" class="headerlink" title="交通方式概括"></a>交通方式概括</h2><ol>
+<li>高铁<br>建议按如下次序选择：<br><code>白沟站</code>：距县城13.7公里 - 会有车接<br><code>白洋淀站</code>：距县城28公里 -  会有车接<br><code>保定东站</code>：距县城66.6公里 -  会有车接<br>如果没有对应的票，可以选择买票到<code>北京</code>、<code>天津</code>中途下车，或者到<code>石家庄</code>中转。</li>
+<li>飞机<br>建议按如下次序选择，根据情况，会安排车接<br><code>北京大兴国际机场</code> ：9月底通航，距县城90公里<br><code>北京南苑机场</code>：9月底可能没航班，距县城113公里<br><code>天津滨海进场</code>：距县城138.2公里<br><code>石家庄正定机场</code>：距县城177公里，机场旁有高铁站<code>正定站</code>,可选高铁换乘<br><code>首都机场</code>：距县城157公里，略远，离北京市区也远。</li>
+<li><p>长途车<br>适用于省内，目的地<code>雄县汽车站</code></p>
+</li>
+<li><p>看图 - 双手放大页面可看清：<br>火车站<br><img src="https://res.cloudinary.com/saintasmita/image/upload/v1565947610/codexiongan/%E9%9B%84%E5%8E%BF%E7%81%AB%E8%BD%A6%E7%AB%99_qxbzzz.png" alt><br>机场 - 中间没名字的那个是北京大兴国际机场<br><img src="https://res.cloudinary.com/saintasmita/image/upload/v1565947629/codexiongan/%E9%9B%84%E5%8E%BF%E5%91%A8%E8%BE%B9%E6%9C%BA%E5%9C%BA_x9wl76.png" alt><br><img src="https://res.cloudinary.com/saintasmita/image/upload/v1565947662/codexiongan/%E9%9B%84%E5%8E%BF%E5%91%A8%E8%BE%B9%E6%9C%BA%E5%9C%BA002_bg3axp.png" alt></p>
+</li>
+</ol>
+<h2 id="北京"><a href="#北京" class="headerlink" title="北京"></a>北京</h2><p>北京过来可以选择高铁、长途汽车，建议优先高铁，便宜、便捷、准时。</p>
+<ol>
+<li>高铁<br>北京南站出发，目的地优先选择<code>白沟站</code>，其次选择<code>白洋淀站</code>。由于绕行保定，所以路上约<code>1.5小时</code><br>白沟站班次（仅供参考，以实际为准）<br><img src="https://res.cloudinary.com/saintasmita/image/upload/v1565944736/codexiongan/%E5%8C%97%E4%BA%AC%E5%88%B0%E7%99%BD%E6%B2%9F%E7%81%AB%E8%BD%A6_izajvi.png" alt><br>白洋淀站班次(仅供参考，以实际为准)<br><img src="https://res.cloudinary.com/saintasmita/image/upload/v1565944829/codexiongan/%E5%8C%97%E4%BA%AC%E5%88%B0%E7%99%BD%E6%B4%8B%E6%B7%80_marhug.png" alt></li>
+<li>汽车<br>北京六里桥汽车站到<code>雄县汽车站</code>，班次很多，路上<code>1.5-2个小时</code>。</li>
+</ol>
+<h2 id="天津"><a href="#天津" class="headerlink" title="天津"></a>天津</h2><p>天津过来可以选择高铁、长途汽车，建议优先高铁，便宜、便捷、准时。</p>
+<ol>
+<li>高铁<br>天津或天津西出发，目的地优先选择<code>白沟站</code>，其次选择<code>白洋淀站</code>，路上约<code>1小时</code><br>白沟站班次（仅供参考，以实际为准）<br><img src="https://res.cloudinary.com/saintasmita/image/upload/v1565945114/codexiongan/%E5%A4%A9%E6%B4%A5%E5%88%B0%E7%99%BD%E6%B2%9F_aejviy.png" alt><br>白洋淀站班次(仅供参考，以实际为准)<br><img src="https://res.cloudinary.com/saintasmita/image/upload/v1565945134/codexiongan/%E5%A4%A9%E6%B4%A5%E5%88%B0%E7%99%BD%E6%B4%8B%E6%B7%80_mt2enk.png" alt></li>
+<li>汽车<br>汽车站到<code>雄县汽车站</code>，班次略少，路上<code>1.5-2个小时</code>。<h2 id="广州"><a href="#广州" class="headerlink" title="广州"></a>广州</h2></li>
+</ol>
+<p>广州过来可以选择火车(高铁)、飞机，建议火车（高铁）</p>
+<ol>
+<li><p>火车（高铁）<br>雄县周边较近的火车站有<code>白沟站</code>，<code>白洋淀站</code>，到站后比较方便。稍远一点的可选<code>保定东</code>，距离雄县约66公里。此外还可以选择<code>石家庄站</code>中转。<br>白沟站班次：如果买不到直达的，可以延长买到<code>天津</code>或<code>北京</code>，中途下车。<br><img src="https://res.cloudinary.com/saintasmita/image/upload/v1565945659/codexiongan/%E5%B9%BF%E5%B7%9E%E5%88%B0%E7%99%BD%E6%B2%9F_clhks0.png" alt><br>白洋淀站班次：如果买不到直达的，可以延长买到<code>天津</code>或<code>北京</code>，中途下车。<br><img src="https://res.cloudinary.com/saintasmita/image/upload/v1565945679/codexiongan/%E5%B9%BF%E5%B7%9E%E7%99%BD%E6%B4%8B%E6%B7%80_zljhxo.png" alt><br>保定东班次：<br><img src="https://res.cloudinary.com/saintasmita/image/upload/v1565945712/codexiongan/%E5%B9%BF%E5%B7%9E%E5%88%B0%E4%BF%9D%E5%AE%9A%E4%B8%9C_ggfeq8.png" alt></p>
+</li>
+<li><p>飞机 - 看<strong>交通方式概括</strong></p>
+</li>
+</ol>
+<h2 id="其他城市"><a href="#其他城市" class="headerlink" title="其他城市"></a>其他城市</h2><p>参考<strong>交通方式概括</strong></p>
 
       
     </div>
@@ -459,7 +474,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/redis/" rel="tag"># redis</a>
+            <a href="/tags/交通/" rel="tag"># 交通</a>
           
         </div>
       
@@ -472,8 +487,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/06/16/go-primer-note/" rel="next" title="go-primer-note">
-                <i class="fa fa-chevron-left"></i> go-primer-note
+              <a href="/2019/07/08/mongo-cursor/" rel="next" title="springboot use mongo-cursor">
+                <i class="fa fa-chevron-left"></i> springboot use mongo-cursor
               </a>
             
           </div>
@@ -482,8 +497,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/06/27/unicode-substring/" rel="prev" title="unicode-substring">
-                unicode-substring <i class="fa fa-chevron-right"></i>
+              <a href="/2019/09/06/redis-cache-lua/" rel="prev" title="redis-cache-lua">
+                redis-cache-lua <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -631,7 +646,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#工具介绍"><span class="nav-number">1.</span> <span class="nav-text">工具介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于key长度的测试"><span class="nav-number">2.</span> <span class="nav-text">关于key长度的测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网上的一种答案"><span class="nav-number">2.1.</span> <span class="nav-text">网上的一种答案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试Lua脚本"><span class="nav-number">2.2.</span> <span class="nav-text">测试Lua脚本</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#交通方式概括"><span class="nav-number">1.</span> <span class="nav-text">交通方式概括</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#北京"><span class="nav-number">2.</span> <span class="nav-text">北京</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#天津"><span class="nav-number">3.</span> <span class="nav-text">天津</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#广州"><span class="nav-number">4.</span> <span class="nav-text">广州</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他城市"><span class="nav-number">5.</span> <span class="nav-text">其他城市</span></a></li></ol></div>
             
 
           </div>
