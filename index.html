@@ -362,7 +362,7 @@
                 
               
 
-              <time title="创建时间：2019-12-04 11:02:49 / 修改时间：11:15:44" itemprop="dateCreated datePublished" datetime="2019-12-04T11:02:49+08:00">2019-12-04</time>
+              <time title="创建时间：2019-12-04 11:02:49 / 修改时间：11:30:53" itemprop="dateCreated datePublished" datetime="2019-12-04T11:02:49+08:00">2019-12-04</time>
             
 
             
@@ -402,12 +402,16 @@
 
       
         
+          <h1 id="一个定时任务的实现"><a href="#一个定时任务的实现" class="headerlink" title="一个定时任务的实现"></a>一个定时任务的实现</h1><h1 id="timer-和-ticker的表现"><a href="#timer-和-ticker的表现" class="headerlink" title="timer 和 ticker的表现"></a>timer 和 ticker的表现</h1><p><code>newTicker</code>：给定一个时间间隔d，则每个d就会向自己的chan中发送时间<br><code>newTimer</code>: 给定一个时间间隔d，则至少在d时间后，会向自己的chan中发送一个当前时间，仅发送一次。如果想达到<code>newTicker</code>相似的效果，则可以每次触发后，调用<code>Reset</code>,重置计时时间，从重置那一刻开始，重新计算间隔d。</p>
+          <!--noindex-->
           
-            <h1 id="一个定时任务的实现"><a href="#一个定时任务的实现" class="headerlink" title="一个定时任务的实现"></a>一个定时任务的实现</h1><h1 id="timer-和-ticker的表现"><a href="#timer-和-ticker的表现" class="headerlink" title="timer 和 ticker的表现"></a>timer 和 ticker的表现</h1><p><code>newTicker</code>：给定一个时间间隔d，则每个d就会向自己的chan中发送时间<br><code>newTimer</code>: 给定一个时间间隔d，则至少在d时间后，会向自己的chan中发送一个当前时间，仅发送一次。如果想达到<code>newTicker</code>相似的效果，则可以每次触发后，调用<code>Reset</code>,重置计时时间，从重置那一刻开始，重新计算间隔d。</p>
-<p>例如：<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">testTimerAndTicker</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	wg.Add(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// NewTimer()，3秒后发送一个时间到chan，仅发送一次</span></span><br><span class="line">	timer := time.NewTimer(<span class="number">3</span> * time.Second)</span><br><span class="line"></span><br><span class="line">	<span class="comment">//NewTicker(), 每隔2秒发送一个时间</span></span><br><span class="line">	ticker := time.NewTicker(<span class="number">3</span> * time.Second)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(t *time.Ticker)</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> wg.Done()</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			now := &lt;-t.C</span><br><span class="line">			fmt.Println(<span class="string">"ticker"</span>, now.Format(<span class="string">"2006-01-02 15:04:05"</span>))</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;(ticker)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(t *time.Timer)</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> wg.Done()</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			now := &lt;-t.C</span><br><span class="line">			fmt.Println(<span class="string">"timer"</span>, now.Format(<span class="string">"2006-01-02 15:04:05"</span>))</span><br><span class="line">			<span class="comment">//t.Reset(3 * time.Second)</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;(timer)</span><br><span class="line"></span><br><span class="line">	wg.Wait()</span><br><span class="line"></span><br><span class="line">	timer.Stop()</span><br><span class="line">	ticker.Stop()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>会每3秒输出一次ticker的信息，如果把<strong>//t.Reset(3 * time.Second)</strong>打开，则每3秒，会额外输出timer的信息</p>
-
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/12/04/go-timer-ticker/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
           
+          <!--/noindex-->
         
       
     </div>
