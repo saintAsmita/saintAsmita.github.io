@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":true,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="在多线程的情况下，Java一个变量被更改了是否能够立即被另外的线程看到？即使是单个线程，判断一个变量不为空，那么此时这个变量真的为空吗？这就涉及到了变量可见性、指令重排的问题。更深层次的是指令重排。">
+<meta name="keywords" content="java happens-before">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java变量在多线程下的可见性">
+<meta property="og:url" content="http://yoursite.com/2022/02/25/Java变量在多线程下的可见性/index.html">
+<meta property="og:site_name" content="Code">
+<meta property="og:description" content="在多线程的情况下，Java一个变量被更改了是否能够立即被另外的线程看到？即使是单个线程，判断一个变量不为空，那么此时这个变量真的为空吗？这就涉及到了变量可见性、指令重排的问题。更深层次的是指令重排。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2022-02-26T14:22:13.967Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java变量在多线程下的可见性">
+<meta name="twitter:description" content="在多线程的情况下，Java一个变量被更改了是否能够立即被另外的线程看到？即使是单个线程，判断一个变量不为空，那么此时这个变量真的为空吗？这就涉及到了变量可见性、指令重排的问题。更深层次的是指令重排。">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2022/02/25/Java变量在多线程下的可见性/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Java变量在多线程下的可见性 | Code</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Code</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">it is empty</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>时间轴</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/saintAsmita" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/02/25/Java变量在多线程下的可见性/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="saint Asmita">
+      <meta itemprop="description" content="a website for myself">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Code">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java变量在多线程下的可见性
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2022-02-25 23:58:43" itemprop="dateCreated datePublished" datetime="2022-02-25T23:58:43+08:00">2022-02-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2022-02-26 22:22:13" itemprop="dateModified" datetime="2022-02-26T22:22:13+08:00">2022-02-26</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在多线程的情况下，Java一个变量被更改了是否能够立即被另外的线程看到？即使是单个线程，判断一个变量不为空，那么此时这个变量真的为空吗？这就涉及到了变量可见性、指令重排的问题。更深层次的是指令重排。</p>
+<a id="more"></a>
+<h2 id="一、-问题"><a href="#一、-问题" class="headerlink" title="一、 问题"></a>一、 问题</h2><p>有时候我们会通过全局变量共享数据，有两个问题要搞清楚：<br>1、<code>可见性问题</code>，线程A可能一直不结束，为什么呢？<br>2、<code>指令重排</code>，线程A结束的时候，为何有时候 shareVal输出的是 0，而不是5？<br><strong>示例代码1</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> needRun = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> shareVal = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">       <span class="comment">// thread A</span></span><br><span class="line">        <span class="keyword">new</span> Thread(() - &gt; &#123;</span><br><span class="line">            <span class="keyword">while</span> (needRun) &#123; <span class="comment">// 1</span></span><br><span class="line">                Thread.yield();</span><br><span class="line">                System.out.println(<span class="string">"A run..."</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">"A end shareVal is "</span> + shareVal); <span class="comment">// 2</span></span><br><span class="line">        &#125;).start();</span><br><span class="line">        <span class="comment">// 睡眠一会，先让上面的线程跑起来</span></span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        <span class="comment">// thread B</span></span><br><span class="line">        <span class="keyword">new</span> Thread(() - &gt; &#123;</span><br><span class="line">            shareVal = <span class="number">5</span>;  <span class="comment">// 3</span></span><br><span class="line">            needRun = <span class="keyword">false</span>; <span class="comment">// 4</span></span><br><span class="line">            System.out.println(<span class="string">"B change needRun to false ok..."</span>);</span><br><span class="line">        &#125;).start();</span><br><span class="line"></span><br><span class="line">        Thread.sleep(<span class="number">1000</span> * <span class="number">60</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>3、<code>又一个指令重排</code>，如果下面第二行不加 volatile，假设可见性没问题的情况下。如果第8行<code>if (singleton == null)</code>不成立的时候，返回的单例实例，为什么有时候是不完整的，明明写的代码(3)在(2)后面，为何singleton != null的时候，仍返回不完整的实例？<br>例如单例模式如下：<br><strong>示例代码2</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton5</span> </span>&#123;</span><br><span class="line"> <span class="number">2</span>         <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> Singleton singleton;</span><br><span class="line"> <span class="number">3</span>  </span><br><span class="line"> <span class="number">4</span>         <span class="function"><span class="keyword">private</span> <span class="title">SingletonDemo5</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> <span class="number">5</span>         &#125;</span><br><span class="line"> <span class="number">6</span>  </span><br><span class="line"> <span class="number">7</span>         <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">newInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> <span class="number">8</span>             <span class="keyword">if</span> (singleton == <span class="keyword">null</span>) &#123;</span><br><span class="line"> <span class="number">9</span>                 <span class="keyword">synchronized</span> (Singleton.class) &#123;</span><br><span class="line"><span class="number">10</span>                     <span class="keyword">if</span> (singleton == <span class="keyword">null</span>) &#123;</span><br><span class="line">                            <span class="comment">// 可以看做是三行代码</span></span><br><span class="line">                            <span class="comment">// allocator memeort into instance (1)</span></span><br><span class="line">                            <span class="comment">// init instance (2)</span></span><br><span class="line">                            <span class="comment">// singleton = instance (3)</span></span><br><span class="line"><span class="number">11</span>                         singleton = <span class="keyword">new</span> Singleton();</span><br><span class="line"><span class="number">12</span>                     &#125;</span><br><span class="line"><span class="number">13</span>                 &#125;</span><br><span class="line"><span class="number">14</span>             &#125;</span><br><span class="line"><span class="number">15</span>             <span class="keyword">return</span> singleton;</span><br><span class="line"><span class="number">16</span>         &#125;</span><br><span class="line"><span class="number">17</span>     &#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="二、相关知识"><a href="#二、相关知识" class="headerlink" title="二、相关知识"></a>二、相关知识</h2><h3 id="1、Java-内存模型与可见性"><a href="#1、Java-内存模型与可见性" class="headerlink" title="1、Java 内存模型与可见性"></a>1、Java 内存模型与可见性</h3><p>1、线程对共享变量的所有操作都必须在自己的工作内存中进行,不能直接从主内存中读写。<br>2、线程间的变量值传递需要主内存来完成。</p>
+<ul>
+<li>执行线程 A 的处理器把变量 V 缓存到寄存器中。</li>
+<li>执行线程 A 的处理器把变量 V 缓存到自己的缓存中，但还没有同步刷新到主内存中去。</li>
+<li>执行线程 B 的处理器的缓存中有变量 V 的旧值。</li>
+</ul>
+<p>不过在现代可共享内存的多处理器体系结构中每个处理器都有自己的缓存，并周期性的与主内存协调一致。不会一直看不到的（是否能够最终一致，待求证）</p>
+<h3 id="2、指令重排"><a href="#2、指令重排" class="headerlink" title="2、指令重排"></a>2、指令重排</h3><p>为了提高执行效率，CPU和编译器可能对指令进行重排，使得实际执行的顺序与代码中的顺序不同。</p>
+<h3 id="3、happens-before原则"><a href="#3、happens-before原则" class="headerlink" title="3、happens-before原则"></a>3、happens-before原则</h3><p>happends-before原则不局限于语言，是指令执行的通用概念。这个概念就一句话：<br>前一个操作的结果对后一个操作可见。无论二者是否在同一个线程。 (the first is visible to and ordered before the second)。</p>
+<p>happends-before 有传递原则，以下面代码为例：</p>
+<p>例如，</p>
+<ul>
+<li>如果说 1 2 heppends-before 3，</li>
+<li>3 happends-before 4 (即3操作对4可见)， 那么1 2 同样 happends-before 4。当4读到true的时候，因为只有3能设置为true，所以说明3发生了。1 2<br>通过传递性， happends-before 4，所以1 2 此时也可见了。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> x = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> y = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> flag = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    x = <span class="number">42</span>; <span class="comment">//1</span></span><br><span class="line">    y = <span class="number">50</span>; <span class="comment">//2</span></span><br><span class="line">    flag = <span class="keyword">true</span>; <span class="comment">//3</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">reader</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (flag) &#123; <span class="comment">//4</span></span><br><span class="line">        System.out.println(<span class="string">"x:"</span> + x); <span class="comment">//5</span></span><br><span class="line">        System.out.println(<span class="string">"y:"</span> + y); <span class="comment">//6</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="三、示例分析"><a href="#三、示例分析" class="headerlink" title="三、示例分析"></a>三、示例分析</h2><h3 id="1、可见性"><a href="#1、可见性" class="headerlink" title="1、可见性"></a>1、可见性</h3><p>复制一份上面的<strong>示例代码1</strong>到这，分析一波<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> needRun = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> shareVal = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">       <span class="comment">// thread A</span></span><br><span class="line">        <span class="keyword">new</span> Thread(() - &gt; &#123;</span><br><span class="line">            <span class="keyword">while</span> (needRun) &#123; <span class="comment">// 1</span></span><br><span class="line">                Thread.yield();</span><br><span class="line">                System.out.println(<span class="string">"A run..."</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">"A end shareVal is "</span> + shareVal); <span class="comment">// 2</span></span><br><span class="line">        &#125;).start();</span><br><span class="line">        <span class="comment">// 睡眠一会，先让上面的线程跑起来</span></span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        <span class="comment">// thread B</span></span><br><span class="line">        <span class="keyword">new</span> Thread(() - &gt; &#123;</span><br><span class="line">            shareVal = <span class="number">5</span>;  <span class="comment">// 3</span></span><br><span class="line">            needRun = <span class="keyword">false</span>; <span class="comment">// 4</span></span><br><span class="line">            System.out.println(<span class="string">"B change needRun to false ok..."</span>);</span><br><span class="line">        &#125;).start();</span><br><span class="line"></span><br><span class="line">        Thread.sleep(<span class="number">1000</span> * <span class="number">60</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>问题分析</strong></p>
+<p>由于线程工作的原理，当thread B 更改了<code>needRun = fasle</code>之后，trhead A并不会立即看到，所以A不会立即停止，甚至JVM会优化掉while(needRun)为while(true)</p>
+<p><strong>解决</strong><br>通过happens-beofre原则可知，只要thread B 写 变量needRun的时候，happens-before线程A读needRun即可。<br>如果保证，有几个方法</p>
+<ol>
+<li>对一个 volatile 域的写, happens-before 于任意<code>后续</code>对这个 volatile 域的读<br>这个实现方法是：即写一个被volatile修饰的变量，发生两个事情：</li>
+</ol>
+<ul>
+<li>立即将当前线程中缓存的新值刷回贮存</li>
+<li>刷写回主内存的操作会使其他CPU缓存的该共享变量内存地址的数据无效。</li>
+</ul>
+<p>所以，给needRun变量加上 volatile修饰符即可。</p>
+<ol start="2">
+<li><p>一个锁的解锁 happens-before 于随后对这个锁的加锁。<br>所以可以每次对needRun读写的时候加<code>synchronized</code>，当needRun = fasle发生时，涉及到了加锁解锁，一定happends-before下次一对needRun的加锁，即while循环里下一次读needRun</p>
+</li>
+<li><p>多说一句， 如果线程 A 执行操作 ThreadB.start() (启动线程B), 那么 A 线程的 ThreadB.start() 操作 happens-before 于线程 B 中的任意操作，也就是说，主线程 A 启动子线程 B 后，子线程 B 能看到主线程在启动子线程 B 前的操作。</p>
+</li>
+</ol>
+<h3 id="2、指令重排-1"><a href="#2、指令重排-1" class="headerlink" title="2、指令重排"></a>2、指令重排</h3><p>还是示例代码1，因为 3 和 4 之间没有依赖关系，所以编译、执行的时候都有可能重排，先执行<code>needRun = false</code>，让 A 结束（假设没有可见性问题了），后执行 shareVal = 5；结果就是A打印出了 shareVal = 0</p>
+<p>再看示例代码2，如果去掉volatile<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton5</span> </span>&#123;</span><br><span class="line"> <span class="number">2</span>         <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> Singleton singleton;</span><br><span class="line"> <span class="number">3</span>  </span><br><span class="line"> <span class="number">4</span>         <span class="function"><span class="keyword">private</span> <span class="title">SingletonDemo5</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> <span class="number">5</span>         &#125;</span><br><span class="line"> <span class="number">6</span>  </span><br><span class="line"> <span class="number">7</span>         <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">newInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> <span class="number">8</span>             <span class="keyword">if</span> (singleton == <span class="keyword">null</span>) &#123;</span><br><span class="line"> <span class="number">9</span>                 <span class="keyword">synchronized</span> (Singleton.class) &#123;</span><br><span class="line"><span class="number">10</span>                     <span class="keyword">if</span> (singleton == <span class="keyword">null</span>) &#123;</span><br><span class="line">                            <span class="comment">// 可以看做是三行代码</span></span><br><span class="line">                            <span class="comment">// allocator memeort into instance (1)</span></span><br><span class="line">                            <span class="comment">// init instance (2)</span></span><br><span class="line">                            <span class="comment">// singleton = instance (3)</span></span><br><span class="line"><span class="number">11</span>                         singleton = <span class="keyword">new</span> Singleton();</span><br><span class="line"><span class="number">12</span>                     &#125;</span><br><span class="line"><span class="number">13</span>                 &#125;</span><br><span class="line"><span class="number">14</span>             &#125;</span><br><span class="line"><span class="number">15</span>             <span class="keyword">return</span> singleton;</span><br><span class="line"><span class="number">16</span>         &#125;</span><br><span class="line"><span class="number">17</span>     &#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>问题</strong><br>(3)与(2)之间没有依赖关系，所以可能先执行(3)，使得 singleton != null，此时(2)还没有执行，所以返回了一个不完整的实例。</p>
+<p><strong>解决</strong></p>
+<p>1、用volatile修饰singleton，volatile语义增强后，会禁止将它<code>写</code>之前的操作重排的后面，所以禁止(2)重排到(3)后面。</p>
+<h2 id="四、结论"><a href="#四、结论" class="headerlink" title="四、结论"></a>四、结论</h2><p>happens-before能保证可见性。<br>volatile这个关键字有两个大的作用：</p>
+<ul>
+<li>确定了对被修饰变量本身读写的happens-before关系。</li>
+<li>增强的语义，添加了内存屏障，影响了指令重排：</li>
+</ul>
+<ol>
+<li>volatile 写之前的操作不会被重排到volatile之后</li>
+<li>volatile 读之后的操作不会被重排序到 volatile 读之前</li>
+</ol>
+<p>所以通过共享变量通信很是麻烦，golang倡导通过通信共享数据，而不是通过共享数据进行通信。<br>Do not communicate by sharing memory; instead, share memory by communicating.</p>
+<p>下面的文章详细解释了happends-before<br><a href="https://juejin.im/post/5d80251d518825491b72419c" target="_blank" rel="noopener">Java可见性与指令重排</a><br><a href="https://golang.org/ref/mem" target="_blank" rel="noopener">golang内存模型与可见性</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java-happens-before/" rel="tag"># java happens-before</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/27/logbakc如何通过纯代码动态生成Logger/" rel="next" title="logbakc如何通过纯代码动态生成Logger">
+                <i class="fa fa-chevron-left"></i> logbakc如何通过纯代码动态生成Logger
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+			<a href="/">
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="saint Asmita">
+			</a>
+            
+              <p class="site-author-name" itemprop="name">saint Asmita</p>
+              <div class="site-description motion-element" itemprop="description">a website for myself</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="//music.163.com/outchain/player?type=2&id=4947189&auto=0&height=66"></iframe>
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、-问题"><span class="nav-number">1.</span> <span class="nav-text">一、 问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、相关知识"><span class="nav-number">2.</span> <span class="nav-text">二、相关知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、Java-内存模型与可见性"><span class="nav-number">2.1.</span> <span class="nav-text">1、Java 内存模型与可见性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、指令重排"><span class="nav-number">2.2.</span> <span class="nav-text">2、指令重排</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、happens-before原则"><span class="nav-number">2.3.</span> <span class="nav-text">3、happens-before原则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、示例分析"><span class="nav-number">3.</span> <span class="nav-text">三、示例分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、可见性"><span class="nav-number">3.1.</span> <span class="nav-text">1、可见性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、指令重排-1"><span class="nav-number">3.2.</span> <span class="nav-text">2、指令重排</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、结论"><span class="nav-number">4.</span> <span class="nav-text">四、结论</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">saint Asmita</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.1"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
